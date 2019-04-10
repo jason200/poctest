@@ -1,0 +1,25 @@
+Step1. Docker pull NGC recent NGC tensorflow image
+docker pull nvcr.io/nvidia/tensorflow:18.10-py3
+
+Step2. 
+nvidia-docker run -it -v mnt/hryu:/mnt/hryu nvcr.io/nvidia/tensorflow:18.10-py3 bash
+
+Step3. train with SingleGPU (synthetic dataset)
+python /workspace/nvidia-examples/cnn/resnet.py --layers=50 --precision=fp32 --num_iter=400 --iter_unit=batch --batch_size 128
+
+Step4. train with 16GPU (synthetic dataset)
+mpirun --allow-run-as-root --bind-to socket -np 16 python /workspace/nvidia-example/cnn/resnet.py --data_dir=/mnt/hryu/dataset-tf/train-val-tfrecord-480-subset --log_dir=/mnt/hryu/result/try3 --layers=50 --precision=fp16 --num_iter=400 --iter_unit=batch --batch_size 256
+
+Step5. result FP32, batch 128
+P32 128 batch 
+rm -rf /mnt/hryu-pggan/result/try3 && cd /workspace/nvidia-examples && mpirun --allow-run-as-root --bind-to socket -np 16 python /workspace/nvidia-examples/cnn/resnet.py --data_dir=/mnt/hryu-pggan/dataset-tfrain-val-tfrecord-480-subset --log_dir=/mnt/hryu-pggan/result/try3 --layers=50 --precision=fp32 --num_iter=400 --iter_unit=batch --batch_size 128
+
+Step6. log 
+80 epoch
+rm -rf /mnt/hryu-pggan/result/try3 && cd /workspace/nvidia-examples && mpirun --allow-run-as-root --bind-to socket -np 16 python /workspace/nvidia-examples/cnn/resnet.py --data_dir=/mnt/hryu-pggan/dataset-tf/train-val-tfrecord-480-subset --log_dir=/mnt/hryu-pggan/result/try3 --layers=50 --precision=fp16 --num_iter=90 --iter_unit=epoch --batch_size 256 
+
+Step7. result FP16, batch 256
+FP16 256 batch 
+rm -rf /mnt/hryu-pggan/result/try3 && cd /workspace/nvidia-examples && mpirun --allow-run-as-root --bind-to socket -np 16 python /workspace/nvidia-examples/cnn/resnet.py --data_dir=/mnt/hryu-pggan/dataset-tf/train-val-tfrecord-480-subset --log_dir=/mnt/hryu-pggan/result/try3 --layers=50 --precision=fp16 --num_iter=400 --iter_unit=batch --batch_size 256 
+
+github/yhgon
